@@ -1,4 +1,4 @@
-package main
+package k3t
 
 import (
 	"archive/tar"
@@ -26,7 +26,7 @@ type Cluster struct {
 	containerName string
 	containerId   string
 	port          int
-	logger        zerolog.Logger
+	Logger        zerolog.Logger
 }
 
 func (c *Cluster) pullImage(ctx context.Context) error {
@@ -35,7 +35,7 @@ func (c *Cluster) pullImage(ctx context.Context) error {
 		return errors.Wrap(err, "image pull failed")
 	}
 	defer rc.Close()
-	err = handleImagePull(rc, c.logger)
+	err = handleImagePull(rc, c.Logger)
 	if err != nil {
 		return errors.Wrap(err, "error handling image pull event stream")
 	}
@@ -78,7 +78,7 @@ func (c *Cluster) createContainer(ctx context.Context) error {
 	}
 	c.containerId = res.ID
 
-	c.logger.Info().
+	c.Logger.Info().
 		Str("id", res.ID).
 		Msg("container created successfully")
 
@@ -96,7 +96,7 @@ func (c *Cluster) startContainer(ctx context.Context) error {
 
 func (c *Cluster) getConfig(ctx context.Context) ([]byte, error) {
 	for {
-		c.logger.Trace().
+		c.Logger.Trace().
 			Msg("waiting for kubeconfig")
 		res, err := c.cli.ContainerStatPath(ctx, c.containerId, "/output/kubeconfig.yaml")
 		if err != nil {
@@ -141,7 +141,7 @@ func (c *Cluster) waitForPort(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			c.logger.Trace().Msg("Trying to connect to apiserver")
+			c.Logger.Trace().Msg("Trying to connect to apiserver")
 			conn, _ := net.Dial("tcp", addr)
 			if conn != nil {
 				_ = conn.Close()

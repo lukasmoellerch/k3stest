@@ -1,4 +1,4 @@
-package main
+package k3t
 
 import (
 	"encoding/base64"

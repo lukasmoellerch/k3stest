@@ -1,4 +1,4 @@
-package main
+package k3t
 
 import (
 	"context"
@@ -26,7 +26,7 @@ func TestCluster(t *testing.T) {
 		t.Errorf("ClientKeyData should not be empty")
 	}
 
-	cluster.logger.Info().
+	cluster.Logger.Info().
 		Msg("shutting down")
 	if err := cluster.Stop(bg); err != nil {
 		t.Error(err)
